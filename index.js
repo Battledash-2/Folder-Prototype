@@ -7,7 +7,9 @@ const folderPrototype = (proto, folder, pass=[]) => {
 				loadFiles(fs.readdirSync(path.join(__dirname, folder, opath, file)).filter(fn=>!fn.includes('.test')), az, path.join(opath, file));
 				continue;
 			}
-			let p = proto.prototype;
+			let p;
+			if (typeof p === 'function') p = proto.prototype;
+			else p = proto;
 			if (as !== '') {
 				for (let a of as.split('.')) {
 					if (!p.hasOwnProperty(a)) p[a] = {};
