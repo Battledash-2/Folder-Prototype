@@ -1,4 +1,7 @@
-const folderPrototype = (proto, folder, pass=[]) => {
+const folderPrototype = (proto, folder, pass=[], wrapObjects=false, protot=false) => {
+	wrapObjects = wrapObjects || function(o){return o};
+	if (typeof pass === 'function') { wrapObjects = pass; pass = []; };
+
 	const functions = fs.readdirSync(path.join(__dirname, folder)).filter(fn=>!fn.includes('.test'));
 	const loadFiles = (functions, as='', opath='') => {
 		for (let file of functions) {
@@ -8,11 +11,12 @@ const folderPrototype = (proto, folder, pass=[]) => {
 				continue;
 			}
 			let p;
-			if (typeof p === 'function') p = proto.prototype;
+			if (typeof p === 'function' && !protot) p = proto.prototype;
+			if (typeof p === 'function' && protot) p = proto.__proto__;
 			else p = proto;
 			if (as !== '') {
 				for (let a of as.split('.')) {
-					if (!p.hasOwnProperty(a)) p[a] = {};
+					if (!p.hasOwnProperty(a)) p[a] = wrapObjects({});
 					p = p[a];
 				}
 			}
